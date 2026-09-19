@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f7fbff" />
+  <title>Solar Energy Conversion Lab 3D</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="app" class="title-pending">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">☀</div>
+      <div>
+        <h1>Solar Energy Conversion Lab 3D</h1>
+        <p>Jelajahi · Rancang · Uji · Pahami energi surya</p>
+      </div>
+    </div>
+    <div class="hint" id="headerHint">💡 Seret komponen atau meja ke workspace. Komponen dapat diletakkan di atas meja.</div>
+    <div class="top-actions">
+      <button class="icon-btn" id="helpBtn" title="Bantuan">?</button>
+      <button class="icon-btn" id="settingsBtn" title="Pengaturan">⚙</button>
+    </div>
+  </header>
+
+  <main class="main-grid">
+    <aside class="left-panel card" aria-label="Kotak alat">
+      <div class="panel-title">Kotak Alat <span>⌃</span></div>
+      <p class="toolbox-note">Drag komponen dan meja ke workspace. Maksimum 3 meja. Komponen dapat diletakkan di atas meja.</p>
+      <div id="toolbox" class="toolbox"></div>
+    </aside>
+
+    <section class="workspace-column">
+      <div class="scene-card card">
+        <div id="scene-container" class="scene-container" aria-label="Area perakitan simulasi 3D"></div>
+        <div class="scene-overlay status-chip" id="dayStatus">☀ Siang · 10:00</div>
+        <div class="scene-overlay drag-tip">✥ Drag objek · klik untuk pilih · Delete untuk hapus</div>
+        <div id="selectionToolbar" class="selection-toolbar hidden" aria-live="polite">
+          <span id="selectedObjectLabel">Objek dipilih</span>
+          <button id="deleteSelectedBtn" type="button" title="Hapus objek terpilih">🗑 Hapus</button>
+        </div>
+        <div id="trashZone" class="trash-zone hidden">🗑 Lepaskan di sini untuk menghapus</div>
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">＋</div>
+          <strong>Area perakitan masih kosong</strong>
+          <span>Ambil Matahari, Panel Surya, Inverter, meter, dan perangkat dari Kotak Alat.</span>
+        </div>
+        <div class="placement-banner hidden" id="placementBanner">Klik pada area laboratorium untuk meletakkan objek.</div>
+      </div>
+
+      <section class="data-card card">
+        <div class="data-title">Data Simulasi (Real-time)</div>
+        <div id="dataGrid" class="data-grid"></div>
+      </section>
+    </section>
+
+    <aside class="right-column">
+      <section class="card control-card">
+        <div class="panel-title">Pengaturan Simulasi <span>⌃</span></div>
+        <label class="check-row"><input id="showFlow" type="checkbox" checked> <span>Tampilkan aliran energi</span></label>
+        <div class="legend-stack">
+          <label><input id="showPhotons" type="checkbox" checked> <span class="dot yellow"></span> Foton (cahaya)</label>
+          <label><input id="showDC" type="checkbox" checked> <span class="dot blue"></span> Arus DC</label>
+          <label><input id="showAC" type="checkbox" checked> <span class="dot orange"></span> Arus AC</label>
+        </div>
+        <label class="check-row"><input id="showLabels" type="checkbox" checked> <span>Label objek</span></label>
+        <label class="check-row"><input id="showValues" type="checkbox" checked> <span>Nilai real-time</span></label>
+        <label class="check-row"><input id="showStopwatch" type="checkbox"> <span>Stopwatch eksperimen</span></label>
+        <div id="stopwatch" class="stopwatch hidden">00:00:00</div>
+      </section>
+
+      <section class="card control-card parameter-card">
+        <div class="panel-title">Parameter & Komponen <span>⌃</span></div>
+
+        <div class="control-group solar-time-group">
+          <div class="group-label">Waktu Matahari</div>
+          <div class="time-readout"><span id="solarClock">10:00</span><span id="solarAvailability" class="badge day">Panel aktif</span></div>
+          <input id="solarTime" type="range" min="0" max="24" step="0.25" value="10">
+          <div class="time-scale"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
+          <div class="speed-row">
+            <label for="timeSpeed">Laju waktu</label>
+            <select id="timeSpeed">
+              <option value="60">60× · 1 menit/detik</option>
+              <option value="300" selected>300× · 5 menit/detik</option>
+              <option value="600">600× · 10 menit/detik</option>
+              <option value="1800">1800× · 30 menit/detik</option>
+            </select>
+          </div>
+          <p class="micro-note">Produksi PV hanya tersedia pukul 06:00–18:00. Posisi matahari mengikuti jam simulasi.</p>
+        </div>
+
+        <div class="control-group">
+          <div class="group-label">Material Panel Surya</div>
+          <div id="materialOptions" class="radio-wrap"></div>
+        </div>
+
+        <div class="control-group">
+          <div class="group-label">Irradiance (Intensitas Cahaya)</div>
+          <div class="range-row">
+            <span class="sun-small">☀</span>
+            <input id="irradiance" type="range" min="0" max="1200" step="10" value="1000">
+            <input id="irradianceNumber" class="number-input" type="number" min="0" max="1200" step="10" value="1000">
+            <span class="unit">W/m²</span>
+          </div>
+          <div class="range-scale"><span>0</span><span>1200</span></div>
+        </div>
+
+        <div class="control-group">
+          <div class="group-label">Sudut Panel</div>
+          <div class="range-row">
+            <span class="angle-icon">◿</span>
+            <input id="angle" type="range" min="0" max="90" step="1" value="0">
+            <input id="angleNumber" class="number-input" type="number" min="0" max="90" step="1" value="0">
+            <span class="unit">°</span>
+          </div>
+          <div class="range-scale"><span>0</span><span>90</span></div>
+        </div>
+
+        <div class="control-group">
+          <div class="group-label">Mode Defisit</div>
+          <div class="radio-wrap two-col">
+            <label><input type="radio" name="deficit" value="conceptual" checked> Konseptual</label>
+            <label><input type="radio" name="deficit" value="realistic"> Realistis</label>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="group-label">Beban Elektronik di Scene</div>
+          <div id="deviceSlots" class="device-slots"></div>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <footer class="bottom-bar">
+    <nav class="mode-tabs" aria-label="Mode simulasi">
+      <button class="mode-tab active" data-mode="explore"><span class="mode-icon">⌂</span><span><strong>Eksplorasi</strong><small>Bebas merangkai sistem</small></span></button>
+      <button class="mode-tab" data-mode="guided"><span class="mode-icon">▣</span><span><strong>Eksperimen Terpandu</strong><small>Ikuti langkah demi langkah</small></span></button>
+      <button class="mode-tab" data-mode="compare"><span class="mode-icon">▥</span><span><strong>Bandingkan</strong><small>Analisis berbagai konfigurasi</small></span></button>
+      <button class="mode-tab" data-mode="challenge"><span class="mode-icon">♜</span><span><strong>Tantangan</strong><small>Selesaikan misi menarik</small></span></button>
+    </nav>
+    <div class="transport">
+      <button id="playPauseBtn" class="round-btn play" title="Play/Pause">▶</button>
+      <button id="stepBtn" class="round-btn step" title="Majukan 30 menit">+30m</button>
+      <button id="resetBtn" class="round-btn reset" title="Reset dan kosongkan workspace">↻</button>
+    </div>
+  </footer>
+</div>
+
+<div id="toast" class="toast hidden" role="status"></div>
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-card">
+    <div class="modal-head"><h2 id="modalTitle">Bantuan</h2><button id="closeModal">×</button></div>
+    <div id="modalBody" class="modal-body"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="title.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
