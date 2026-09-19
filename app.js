@@ -376,7 +376,7 @@ function moveObjectsWithTable(tableKey,dx,dz){
 function addObject(type,position){
   const singleton=TOOLS.find(t=>t.id===type)?.singleton;
   if(singleton&&groups[type]){toast(toolName(type)+' sudah ada di workspace.');return false;}
-  if(DEVICES.some(d=>d.id===type)&&state.slots.length>=3){toast('Maksimum tiga beban elektronik sesuai PRD.');return false;}
+  if(DEVICES.some(d=>d.id===type)&&state.slots.length>=3){toast('Maksimum tiga beban alat elektronik.');return false;}
   if(type==='table'&&Object.keys(groups).filter(k=>k.startsWith('table')).length>=TABLE_LIMIT){toast('Maksimum tiga meja eksperimen.');return false;}
   let g,key=type;
   if(type==='sun')g=makeSun();else if(type==='panel')g=makePanel();else if(type==='inverter')g=makeInverter();else if(type==='dcMeter')g=makeMeter('dc');else if(type==='acMeter')g=makeMeter('ac');else if(type==='table'){let idx=0;while(groups['table'+idx]&&idx<TABLE_LIMIT)idx++;key='table'+idx;g=makeTable();}else if(DEVICES.some(d=>d.id===type)){const idx=state.slots.length;key='device'+idx;g=makeDevice(type);state.slots.push({device:type,on:true,key});}
