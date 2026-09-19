@@ -24,7 +24,7 @@
     </div>
     <div class="title-card">
       <div class="title-kicker"><span>☀</span> LABORATORIUM ENERGI SURYA 3D</div>
-      <h1>Solar Energy<br>Conversion Lab 3D</h1>
+      <h1>Simulasi Panel Surya<br>Dalam Model 3D</h1>
       <p class="title-lead">Rangkai sistem energi surya, atur kondisi eksperimen, dan amati perubahan daya secara real-time.</p>
       <div class="title-features">
         <span>✥ Drag & Drop</span>
@@ -32,7 +32,7 @@
         <span>⚡ DC → AC</span>
       </div>
       <button id="enterLabBtn" class="enter-lab-btn" type="button">Mulai Simulasi <span>→</span></button>
-      <p class="title-note">Target tampilan: 1280 × 720 · Three.js primitive geometry · mode pembelajaran eksploratif</p>
+      <p class="title-note">Resoulsi Optimal: 1280 × 720 px· Model Pembelajaran Eksploratif</p>
     </div>
   `;
 
